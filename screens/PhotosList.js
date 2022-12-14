@@ -24,6 +24,9 @@ export default class PhotosList extends Component {
         if (status !== 'granted') {
             alert('brak uprawnień do czytania image-ów z galerii');
         } else this.readPhotos();
+        this.props.navigation.addListener('focus', () => {
+            this.readPhotos()
+        });
     };
 
     readPhotos = async () => {
@@ -34,7 +37,10 @@ export default class PhotosList extends Component {
             mediaType: 'photo'    // typ pobieranych danych, photo jest domyślne
         });
 
-        alert(JSON.stringify(obj.assets[0], null, 4));
+        //alert(JSON.stringify(obj.assets[0], null, 4));
+        obj.assets.sort((a, b) => {
+            return b.id - a.id;
+        })
         this.setState({ photos: obj.assets, isWaiting: false });
     };
 

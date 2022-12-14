@@ -6,6 +6,7 @@ import { BackHandler } from "react-native";
 import Button from '../views/Button';
 import * as MediaLibrary from "expo-media-library";
 import Overlay from '../views/Overlay';
+import Options from './Options';
 
 export default class CameraScreen extends Component {
   constructor(props) {
@@ -13,7 +14,8 @@ export default class CameraScreen extends Component {
     this.state = {
       hasCameraPermission: null,         // przydzielone uprawnienia do używania kamery
       type: Camera.Constants.Type.back,  // typ kamery
-      takenPhotoData: null
+      takenPhotoData: null,
+      areOptionsHidden: false
     };
   }
 
@@ -29,12 +31,8 @@ export default class CameraScreen extends Component {
 
   handleBackPress = () => {
 
-    this.props.navigation.navigate(SCREENS.PHOTOS_LIST, { lastPhotoData: this.state.takenPhotoData });
-    // ToastAndroid.showWithGravity(
-    //   "kliknięto backa",
-    //   ToastAndroid.SHORT,
-    //   ToastAndroid.BOTTOM
-    // );
+    this.props.navigation.navigate(SCREENS.PHOTOS_LIST);
+    return true;
   };
 
   componentDidMount = async () => {
@@ -56,6 +54,11 @@ export default class CameraScreen extends Component {
     BackHandler.removeEventListener("hardwareBackPress", this.handleBackPress);
   };
 
+  handleToggleOptions = () => {
+    this.setState({ areOptionsHidden: !(this.state.areOptionsHidden) })
+    console.log("this.state.areOptionsHidden: ", this.state.areOptionsHidden);
+  }
+
   render() {
     if (this.state.hasCameraPermission)
       return (
@@ -75,9 +78,15 @@ export default class CameraScreen extends Component {
                   <Button text="+"
                     positionStyle={styles.buttonPosition} textStyle={styles.buttonText}
                     onPress={() => { this.takePicture(); }} />
+                  <Button text="Opcje"
+                    positionStyle={styles.buttonPosition} textStyle={styles.buttonText}
+                    onPress={() => { this.handleToggleOptions() }} />
                 </View>
               </View>
             </Camera>
+            <Overlay>
+              <Options isHidden={this.state.areOptionsHidden} />
+            </Overlay>
           </View>
           :
           <View style={{ flex: 1 }}>
